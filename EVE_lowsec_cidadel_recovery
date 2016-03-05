@@ -1,0 +1,53 @@
+import csv
+import numpy
+
+# Home-built thing that (amongst others) converts ID <-> name
+import industry
+s = industry.staticdata()
+
+# Data is from Fuzzwork SDE: https://www.fuzzwork.co.uk/dump/
+f = open('C:\***\mapDenormalize.csv')
+highsec = {}
+lowsec = {}
+nulsec = {}
+lowsec_station_systems = {}
+R = csv.reader(f)
+
+
+for r in R: # Iterate through objects, sort into high/low/null systems
+
+    if r[2]=='5' and float(r[12])>.5:
+        highsec[int(r[0])] = [float(r[7]),float(r[8]),float(r[9])]
+    if r[2]=='5' and float(r[12])>0 and float(r[12])<=.5:
+        lowsec[int(r[0])] = [float(r[7]),float(r[8]),float(r[9])]
+    if r[2]=='5' and float(r[12])>-.99 and float(r[12])<=0:
+        nulsec[int(r[0])] = [float(r[7]),float(r[8]),float(r[9])]
+    
+    # Bad form here... I assume (correctly) the solar system list
+    #  has been fully populated when I search for station systems...
+    
+    # Here, figure out which systems are lowsec station systems
+    if r[2]=='15' and int(r[3]) in lowsec:
+        lowsec_station_systems[int(r[3])] = [int(r[3]),lowsec[int(r[3])],0]
+
+
+
+# Now, lets iterate through nulsec sytems to see what thir closest
+#  lowsec station system is...
+for kk in nulsec:
+    dist = 9e999
+    syst = 0
+    X = nulsec[kk]
+    for kkk in lowsec_station_systems:
+        Y = lowsec_station_systems[kkk][1]
+        if dist > (X[0]-Y[0])**2 + (X[1]-Y[1])**2 + (X[2]-Y[2])**2:
+            dist = (X[0]-Y[0])**2 + (X[1]-Y[1])**2 + (X[2]-Y[2])**2
+            syst = lowsec_station_systems[kkk][0]
+            YY = Y
+    lowsec_station_systems[syst][2]+=1
+
+for kk in lowsec_station_systems:
+    if lowsec_station_systems[kk][2]>100:
+        
+        print s.convert_ID(kk),lowsec_station_systems[kk][2]
+        Y = lowsec_station_systems[kk][1]
