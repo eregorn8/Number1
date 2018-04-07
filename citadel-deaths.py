@@ -2,6 +2,9 @@
 """
 Created on Sat Apr 07 12:44:07 2018
 
+Pulls data from zkill to determine when structures are
+destroyed in Eve Online
+
 @author: Eregorn81
 """
 
@@ -37,6 +40,7 @@ def tstamp_to_evetime(tstamp):
     
 maps = {35832:'Astrahus',35825:'Raitaru',35835:'Athanor',35836:'Tatara',35833:'Fortizar',35826:'Azbel',35827:'Sotiyo',35834:'Keepstar'}
 
+# Put in colors by hand. Bleg.
 cmap = {}
 cmap['Astrahus'] = '#ff9494'
 cmap['Fortizar'] = '#ff0000'
@@ -45,7 +49,7 @@ cmap['Azbel'] = '#4e00ff'
 cmap['Athanor'] = '#87ff84'
 cmap['Tatara'] = '#06ff00'
 
-'''
+
 # Pull data from endpoint on zkillboard
 datall = []
 for typeID in maps.keys():
@@ -55,7 +59,7 @@ for typeID in maps.keys():
         time.sleep(.5) # Be nice, no pound!
         dat += json.loads(requests.get('https://zkillboard.com/api/kills/shipID/'+str(typeID)+'/losses/page/'+str(i+1)+'+/').text)
     datall.append(dat)
-'''
+
 
 # Parse data
 datall2 = []
